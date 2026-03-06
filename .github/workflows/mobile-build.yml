@@ -14,7 +14,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'zule'
+          distribution: 'zulu' # 修正：這裡必須是 zulu
           java-version: '17'
 
       - name: Setup Flutter
@@ -28,13 +28,15 @@ jobs:
 
       - name: Create Keystore in Expected Location
         run: |
-          # 1. 直接在 android/app/ 下生成它報錯時要求的檔名
+          # 確保目錄存在
+          mkdir -p android/app
+          # 產生臨時金鑰
           keytool -genkey -v -keystore android/app/keystore.jks \
             -alias temp_alias -keyalg RSA -keysize 2048 -validity 1 \
             -storepass password123 -keypass password123 \
             -dname "CN=Temp, OU=Temp, O=Temp, L=Temp, S=Temp, C=US"
           
-          # 2. 同時寫入配置文件，確保所有變量名稱對應
+          # 寫入配置文件
           echo "storePassword=password123" > android/key.properties
           echo "keyPassword=password123" >> android/key.properties
           echo "keyAlias=temp_alias" >> android/key.properties
